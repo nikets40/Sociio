@@ -1,0 +1,99 @@
+{
+  "project_info": {
+    "project_number": "881187656417",
+    "firebase_url": "https://messaging-72809.firebaseio.com",
+    "project_id": "messaging-72809",
+    "storage_bucket": "messaging-72809.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:881187656417:android:aeabd07dba7d8f9b7f9da0",
+        "android_client_info": {
+          "package_name": "com.nsingh.nixmessenge"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "881187656417-39trju6vtkivl681738h53bomkju08s2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nsingh.nixmessenge",
+            "certificate_hash": "3650338756a0a61ee427add65429d6ef24485404"
+          }
+        },
+        {
+          "client_id": "881187656417-3bveo6l5u4436p3vsra0osdelcdfrttp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMBvqfcsgwxhlka-vn7NejcFQ3LlRvz5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "881187656417-3bveo6l5u4436p3vsra0osdelcdfrttp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "881187656417-49ujlc2ap2ocgapdsfgfv6gmdk7uf3nd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.nsingh.nixwhatsappclone"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:881187656417:android:77b87663cd3719fc7f9da0",
+        "android_client_info": {
+          "package_name": "com.nsingh.nixwhatsappclone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "881187656417-evhf7g97kdfcksptrdpfs4l68ifnl7gm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nsingh.nixwhatsappclone",
+            "certificate_hash": "3650338756a0a61ee427add65429d6ef24485404"
+          }
+        },
+        {
+          "client_id": "881187656417-3bveo6l5u4436p3vsra0osdelcdfrttp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMBvqfcsgwxhlka-vn7NejcFQ3LlRvz5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "881187656417-3bveo6l5u4436p3vsra0osdelcdfrttp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "881187656417-49ujlc2ap2ocgapdsfgfv6gmdk7uf3nd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.nsingh.nixwhatsappclone"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

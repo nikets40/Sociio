@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:mock_data/mock_data.dart';
 import 'package:nixmessenger/UI/widgets/call_list_tile_widget.dart';
 
-class CallPage extends StatelessWidget {
+class CallTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Random random = new Random();

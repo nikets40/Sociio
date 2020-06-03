@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:nixmessenger/UI/pages/call_page.dart';
-import 'package:nixmessenger/UI/pages/chats_page.dart';
-import 'package:nixmessenger/UI/pages/contacts_page.dart';
+import 'package:nixmessenger/UI/tabs/call_tab.dart';
+import 'package:nixmessenger/UI/tabs/chats_tab.dart';
+import 'package:nixmessenger/UI/tabs/contacts_tab.dart';
+import 'package:nixmessenger/UI/widgets/popup_menu_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -48,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ],
         ),
-        actions: [IconButton(icon: Icon(Icons.more_vert),onPressed: (){},)],
+        actions: [PopUpMenu()],
 
       ),
       floatingActionButton: FloatingActionButton(
@@ -59,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen>
       body: Container(
         child: TabBarView(
           controller: tabController,
-          children: [ChatsPage(), CallPage(), ContactsPage()],
+          children: [ChatsTab(), CallTab(), ContactsTab()],
         ),
       ),
       bottomNavigationBar: SafeArea(

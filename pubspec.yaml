@@ -25,7 +25,18 @@ dependencies:
     sdk: flutter
   mock_data:
   intl:
-
+  country_code_picker:
+  pin_code_fields:
+  firebase_core:
+  cloud_firestore:
+  firebase_analytics:
+  firebase_storage:
+  firebase_auth:
+  provider:
+  image_picker:
+  timeago:
+  flutter_spinkit:
+  toast:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

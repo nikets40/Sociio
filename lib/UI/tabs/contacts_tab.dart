@@ -6,12 +6,12 @@ import 'package:intl/intl.dart';
 import 'package:mock_data/mock_data.dart';
 import 'package:nixmessenger/UI/widgets/contacts_list_tile_widget.dart';
 
-class ContactsPage extends StatefulWidget {
+class ContactsTab extends StatefulWidget {
   @override
-  _ContactsPageState createState() => _ContactsPageState();
+  _ContactsTabState createState() => _ContactsTabState();
 }
 
-class _ContactsPageState extends State<ContactsPage> {
+class _ContactsTabState extends State<ContactsTab> {
   var currentPage = 0;
   @override
   Widget build(BuildContext context) {
