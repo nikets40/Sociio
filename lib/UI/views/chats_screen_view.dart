@@ -1,13 +1,20 @@
+import 'dart:async';
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:nixmessenger/UI/Shared/styles.dart';
+import 'package:nixmessenger/services/db_service.dart';
 
 class ChatsScreen extends StatefulWidget {
   final String image;
   final String name;
+  final String conversationID;
+  final String myID;
 
   ChatsScreen({
+    this.conversationID,
+    this.myID,
     this.image = "https://picsum.photos/id/${1001 + 1}/200/200",
     this.name= "Niket Singh"});
 
@@ -18,7 +25,7 @@ class ChatsScreen extends StatefulWidget {
 class _ChatsScreenState extends State<ChatsScreen> {
   TextEditingController textEditingController;
   bool isTextFieldExpanded = false;
-
+  ScrollController _scrollController = new ScrollController();
   @override
   void initState() {
     textEditingController = TextEditingController();
@@ -104,7 +111,28 @@ class _ChatsScreenState extends State<ChatsScreen> {
         children: [
           Expanded(
             child: Container(
-              child: ChatsList(),
+              child: StreamBuilder<DocumentSnapshot>(
+                stream:  Firestore.instance
+              .collection("Conversations")
+              .document(widget.conversationID)
+              .snapshots(),
+                builder: (context, snapshot) {
+                  if(snapshot.hasData)
+                    {
+                      Timer(Duration(milliseconds: 50),()=>{
+                        _scrollController.jumpTo(_scrollController.position.maxScrollExtent)
+                      });
+                      var document = snapshot.data;
+                      var itemCount = document["messages"].length;
+                      return ChatsList(
+                        myID: widget.myID,
+                        document: document,
+                        scrollController: _scrollController,
+                      );
+                    }
+                  else return Container();
+                }
+              ),
             ),
           ),
           Padding(
@@ -200,7 +228,13 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   ),
                 ),
                 IconButton(
-                  onPressed: textEditingController.text == "" ? null : () {},
+                  onPressed: textEditingController.text == "" ? null : (){
+                    DBService.instance.sendMessage(
+                        textEditingController.text, widget.conversationID);
+                    setState(() {
+                      textEditingController.text = "";
+                    });
+                  },
                   icon: Icon(
                     Icons.send,
                     size: 30,
@@ -217,31 +251,41 @@ class _ChatsScreenState extends State<ChatsScreen> {
 }
 
 class ChatsList extends StatelessWidget {
+  final ScrollController scrollController;
+  final DocumentSnapshot document;
+  final String myID;
+
+  ChatsList({@required this.scrollController, @required this.document, @required this.myID});
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: messages.length,
+        itemCount: document["messages"].length,
+        controller: scrollController,
         itemBuilder: (context, index) {
           Random random = new Random();
-          bool myMessage = random.nextBool();
+          bool myMessage = document["messages"][index]["senderID"] == myID;
+          bool isPreviousMessageMine = false;
+          if(index>0)
+            isPreviousMessageMine =document["messages"][index-1]["senderID"] == document["messages"][index]["senderID"];
           return Align(
             alignment: myMessage
                 ? AlignmentDirectional.centerEnd
                 : AlignmentDirectional.centerStart,
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                minWidth: screenWidth(context) * 0.4,
+                minWidth: screenWidth(context) * 0.1,
                 maxWidth: screenWidth(context) * 0.85,
               ),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.only(left:8.0,right:8 ,top: isPreviousMessageMine?1:15),
                 child: Container(
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
                       color: myMessage ? Colors.green : Colors.white24,
                       borderRadius: BorderRadius.all(Radius.circular(10))),
                   child: Text(
-                    messages[index],
+                    document["messages"][index]["message"],
                     style: TextStyle(
                         color: myMessage ? Colors.black : Colors.white),
                   ),

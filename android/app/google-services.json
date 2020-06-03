@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:881187656417:android:aeabd07dba7d8f9b7f9da0",
+        "mobilesdk_app_id": "1:881187656417:android:c5e3eff383c1ee807f9da0",
         "android_client_info": {
-          "package_name": "com.nsingh.nixmessenge"
+          "package_name": "com.nsingh.nixmessenger"
         }
       },
       "oauth_client": [
         {
-          "client_id": "881187656417-39trju6vtkivl681738h53bomkju08s2.apps.googleusercontent.com",
+          "client_id": "881187656417-960vjb9n5pi9f1maj3qveb91727u6a1e.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.nsingh.nixmessenge",
+            "package_name": "com.nsingh.nixmessenger",
             "certificate_hash": "3650338756a0a61ee427add65429d6ef24485404"
           }
         },
@@ -40,10 +40,10 @@
               "client_type": 3
             },
             {
-              "client_id": "881187656417-49ujlc2ap2ocgapdsfgfv6gmdk7uf3nd.apps.googleusercontent.com",
+              "client_id": "881187656417-adsi40bnjvmtieunqsjfda1usg77ik0v.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.nsingh.nixwhatsappclone"
+                "bundle_id": "com.nsingh.nixmessenger"
               }
             }
           ]
@@ -84,10 +84,10 @@
               "client_type": 3
             },
             {
-              "client_id": "881187656417-49ujlc2ap2ocgapdsfgfv6gmdk7uf3nd.apps.googleusercontent.com",
+              "client_id": "881187656417-adsi40bnjvmtieunqsjfda1usg77ik0v.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.nsingh.nixwhatsappclone"
+                "bundle_id": "com.nsingh.nixmessenger"
               }
             }
           ]
