@@ -123,7 +123,6 @@ class _ChatsScreenState extends State<ChatsScreen> {
                         _scrollController.jumpTo(_scrollController.position.maxScrollExtent)
                       });
                       var document = snapshot.data;
-                      var itemCount = document["messages"].length;
                       return ChatsList(
                         myID: widget.myID,
                         document: document,
@@ -263,7 +262,6 @@ class ChatsList extends StatelessWidget {
         itemCount: document["messages"].length,
         controller: scrollController,
         itemBuilder: (context, index) {
-          Random random = new Random();
           bool myMessage = document["messages"][index]["senderID"] == myID;
           bool isPreviousMessageMine = false;
           if(index>0)

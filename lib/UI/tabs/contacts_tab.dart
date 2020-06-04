@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -15,7 +13,6 @@ class _ContactsTabState extends State<ContactsTab> {
   var currentPage = 0;
   @override
   Widget build(BuildContext context) {
-    Random random = new Random();
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [

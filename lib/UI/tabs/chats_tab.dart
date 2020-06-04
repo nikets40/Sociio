@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -7,7 +6,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:mock_data/mock_data.dart';
 import 'package:nixmessenger/UI/views/chats_screen_view.dart';
 import 'package:nixmessenger/UI/widgets/chats_list_tile_widget.dart';
-import 'package:nixmessenger/UI/widgets/status_widet.dart';
+import 'package:nixmessenger/UI/widgets/status_widget.dart';
 import 'package:nixmessenger/models/conversation.dart';
 import 'package:nixmessenger/services/db_service.dart';
 
