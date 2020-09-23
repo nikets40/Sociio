@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ChatsListTile extends StatelessWidget {
@@ -27,7 +28,7 @@ class ChatsListTile extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 25,
-                backgroundImage: NetworkImage(image),
+                backgroundImage: CachedNetworkImageProvider(image),
                 backgroundColor: Colors.transparent,
               ),
               SizedBox(

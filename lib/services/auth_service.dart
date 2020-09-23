@@ -19,7 +19,7 @@ class AuthService {
   //Handles Auth
   handleAuth() {
     return StreamBuilder(
-        stream: FirebaseAuth.instance.onAuthStateChanged,
+        stream: FirebaseAuth.instance.authStateChanges(),
         builder: (BuildContext context, snapshot) {
           if (snapshot.connectionState != ConnectionState.active ||
               snapshot.connectionState == ConnectionState.waiting)
@@ -43,13 +43,12 @@ class AuthService {
   signIn(AuthCredential authCreds) async {
     FirebaseAuth.instance
         .signInWithCredential(authCreds)
-        .whenComplete(() =>
-        checkUserExists());
+        .whenComplete(() => checkUserExists());
 //     await checkUser();
   }
 
   signInWithOTP(smsCode) {
-    AuthCredential authCreds = PhoneAuthProvider.getCredential(
+    AuthCredential authCreds = PhoneAuthProvider.credential(
         verificationId: verificationId, smsCode: smsCode);
     signIn(authCreds);
   }
@@ -62,7 +61,7 @@ class AuthService {
     };
 
     final PhoneVerificationFailed verificationFailed =
-        (AuthException authException) {
+        (FirebaseAuthException authException) {
       print('${authException.message}');
     };
 
@@ -84,19 +83,16 @@ class AuthService {
   }
 
   checkUserExists() async {
-    final FirebaseUser user = await FirebaseAuth.instance.currentUser();
-//    print("trying to print ${user.uid}");
-    await Firestore.instance
+    final User user = FirebaseAuth.instance.currentUser;
+    await FirebaseFirestore.instance
         .collection("Users")
-        .document(user.uid)
+        .doc(user.uid)
         .get()
         .then((value) async {
       if (!value.exists) {
         await DBService.instance.createUserInDB(mobileNumber, user.uid);
         NavigationService.instance.navigateTo("profile_info");
-      }
-      else
-        {
+      } else {
         NavigationService.instance.navigateToWithClearTop("home");
       }
     });

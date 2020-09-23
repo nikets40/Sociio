@@ -86,14 +86,18 @@ class _OtpVerificationState extends State<OtpVerification> {
                   SizedBox(
                       width: screenWidth(context),
                       child: PinCodeTextField(
+                        appContext: context,
                         length: 6,
-                        obsecureText: false,
-                        textInputType: TextInputType.number,
+                        keyboardType: TextInputType.number,
                         autoDismissKeyboard: false,
                         backgroundColor: Colors.transparent,
                         animationType: AnimationType.fade,
                         autoDisposeControllers: true,
                         animationDuration: Duration(milliseconds: 300),
+                        textStyle: TextStyle(color: Colors.white),
+                        onCompleted: (val){
+                          verifyNumber();
+                        },
                         onChanged: (value) {
                           setState(() {
                             enteredOtp = value;
@@ -145,13 +149,7 @@ class _OtpVerificationState extends State<OtpVerification> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(30))),
                     onPressed: () {
-                      print(enteredOtp);
-                      setState(() {
-                        showLoading = true;
-                      });
-//                      Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
-
-                    AuthService.instance.signInWithOTP(enteredOtp);
+                     verifyNumber();
                     },
                     color: Colors.green,
                     textColor: Colors.white,
@@ -167,5 +165,14 @@ class _OtpVerificationState extends State<OtpVerification> {
         ),
       ),
     );
+  }
+  verifyNumber(){
+    print(enteredOtp);
+    setState(() {
+      showLoading = true;
+    });
+//                      Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+
+    AuthService.instance.signInWithOTP(enteredOtp);
   }
 }

@@ -112,9 +112,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
           Expanded(
             child: Container(
               child: StreamBuilder<DocumentSnapshot>(
-                stream:  Firestore.instance
+                stream:  FirebaseFirestore.instance
               .collection("Conversations")
-              .document(widget.conversationID)
+              .doc(widget.conversationID)
               .snapshots(),
                 builder: (context, snapshot) {
                   if(snapshot.hasData)
@@ -258,14 +258,15 @@ class ChatsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var doc = document.data();
     return ListView.builder(
-        itemCount: document["messages"].length,
+        itemCount: doc["messages"].length,
         controller: scrollController,
         itemBuilder: (context, index) {
-          bool myMessage = document["messages"][index]["senderID"] == myID;
+          bool myMessage = doc["messages"][index]["senderID"] == myID;
           bool isPreviousMessageMine = false;
           if(index>0)
-            isPreviousMessageMine =document["messages"][index-1]["senderID"] == document["messages"][index]["senderID"];
+            isPreviousMessageMine =doc["messages"][index-1]["senderID"] == doc["messages"][index]["senderID"];
           return Align(
             alignment: myMessage
                 ? AlignmentDirectional.centerEnd
@@ -283,7 +284,7 @@ class ChatsList extends StatelessWidget {
                       color: myMessage ? Colors.green : Colors.white24,
                       borderRadius: BorderRadius.all(Radius.circular(10))),
                   child: Text(
-                    document["messages"][index]["message"],
+                    doc["messages"][index]["message"],
                     style: TextStyle(
                         color: myMessage ? Colors.black : Colors.white),
                   ),

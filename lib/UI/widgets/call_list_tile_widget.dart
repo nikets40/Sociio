@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class CallListTile extends StatelessWidget {
@@ -30,7 +31,7 @@ class CallListTile extends StatelessWidget {
             child: CircleAvatar(
               radius: 25,
               backgroundColor: Colors.transparent,
-              backgroundImage: NetworkImage(image),
+              backgroundImage: CachedNetworkImageProvider(image),
             ),
           ),
           SizedBox(

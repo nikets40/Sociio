@@ -19,9 +19,9 @@ class ConversationSnippet {
       this.unseenCount});
 
       factory ConversationSnippet.fromFirestore(DocumentSnapshot snapshot){
-        var data = snapshot.data;
+        var data = snapshot.data();
         return ConversationSnippet(
-          id: snapshot.documentID,
+          id: snapshot.id,
           conversationID: data["conversationID"],
           name:data["name"],
           profilePicture:data["profilePicture"],
