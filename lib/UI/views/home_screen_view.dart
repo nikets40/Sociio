@@ -3,6 +3,7 @@ import 'package:nixmessenger/UI/tabs/call_tab.dart';
 import 'package:nixmessenger/UI/tabs/chats_tab.dart';
 import 'package:nixmessenger/UI/tabs/contacts_tab.dart';
 import 'package:nixmessenger/UI/widgets/popup_menu_widget.dart';
+import 'package:nixmessenger/utils/screen_util.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -38,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.instance = ScreenUtil()..init(context);
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 20,

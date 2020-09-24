@@ -64,8 +64,10 @@ class DBService {
     final User user =  FirebaseAuth.instanceFor().currentUser;
 return await _db.collection("Users").doc(user.uid).collection("Conversations").doc(documentID).update({"unseenCount":0});
 
-
   }
+
+
+
 
   Future<void> sendMessage(String message, String conversationID) async {
     try {

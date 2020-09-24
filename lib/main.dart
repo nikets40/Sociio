@@ -5,6 +5,7 @@ import 'package:nixmessenger/UI/views/login_view.dart';
 import 'package:nixmessenger/UI/views/profile_info.dart';
 import 'package:nixmessenger/services/auth_service.dart';
 import 'package:nixmessenger/services/navigation_service.dart';
+import 'package:nixmessenger/utils/screen_util.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +15,7 @@ void main() {
 class App extends StatelessWidget {
   // Create the initilization Future outside of `build`:
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
 
   @override
   Widget build(BuildContext context) {

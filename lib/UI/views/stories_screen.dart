@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_stories/flutter_stories.dart';
 import 'package:nixmessenger/models/story_model.dart';
-import 'package:social_media_widgets/instagram_story_swipe.dart';
-// import 'package:flutter_stories/flutter_stories.dart';
+import 'package:nixmessenger/utils/screen_util.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class StoryScreen extends StatefulWidget {
   final List<Stories> data;
@@ -76,7 +76,7 @@ class _StoryScreenState extends State<StoryScreen> {
                 key: containerKey,
                 child: PageView(
                   controller: _pageController,
-                  onPageChanged: (index){
+                  onPageChanged: (index) {
                     currentPage = index;
                   },
                   children: storyList(),
@@ -146,24 +146,67 @@ class _StoryScreenState extends State<StoryScreen> {
                     ),
                   ),
 
+                  Container(
+                    // height: screenSize.height,
+                    // width: screenSize.width,
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [
+                      Colors.black.withOpacity(0.9),
+                      Colors.transparent,
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.6)
+                    ], begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                          stops: [0,0.14,0.9,1]
+                        )),
+                  ),
+
                   ///Todo Complete the Story Heading
-                  // Positioned(
-                  //   top: screenSize.height * 0.08,
-                  //   left: screenSize.height * 0.02,
-                  //   child: Container(
-                  //     child: Row(
-                  //       children: [
-                  //         CircleAvatar(
-                  //           backgroundColor: Colors.grey,
-                  //           radius: screenSize.height*0.025,
-                  //           backgroundImage: CachedNetworkImageProvider(widget.data[currentPage].userImage),
-                  //         ),
-                  //         Text(widget.data[currentPage].userName, style: TextStyle(color: Colors.white,fontSize: screenSize.height*0.025),),
-                  //       ],
-                  //
-                  //     ),
-                  //   ),
-                  // )
+                  Positioned(
+                    top: ScreenUtil.instance.setHeight(50),
+                    left: ScreenUtil.instance.setWidth(11),
+                    child: Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Colors.grey,
+                            radius: ScreenUtil.instance.setWidth(20),
+                            backgroundImage: CachedNetworkImageProvider(
+                                widget.data[currentPage].userImage),
+                          ),
+                          SizedBox(
+                            width: ScreenUtil.instance.setWidth(8),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                top: ScreenUtil.instance.setHeight(2)),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.data[currentPage].userName,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: ScreenUtil.instance.setSp(15)),
+                                ),
+                                Text(
+                                  getTime(story[idx].time),
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w300,
+                                      fontSize: ScreenUtil.instance.setSp(13)),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
                 ],
               ),
             );
@@ -173,6 +216,11 @@ class _StoryScreenState extends State<StoryScreen> {
     }
 
     return stories;
+  }
+
+  getTime(Timestamp time) {
+    String timeAgo = timeago.format(time.toDate(), locale: 'en_short');
+    return timeAgo.replaceAll('~', '');
   }
 
   position() {

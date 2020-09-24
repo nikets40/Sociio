@@ -90,7 +90,7 @@ class StatusWidget extends StatelessWidget {
                                           backgroundColor: Colors.white24,
                                           radius: 25,
                                           backgroundImage: CachedNetworkImageProvider(
-                                              data?.userImage??data.file[0].source),
+                                              data?.userImage??data?.file[0]?.source),
                                         ),
                                       ),
                                     ),
