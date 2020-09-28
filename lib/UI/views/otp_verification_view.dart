@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:nixmessenger/UI/Shared/styles.dart';
 import 'package:nixmessenger/services/auth_service.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 class OtpVerification extends StatefulWidget {
   final String mobileNumber;
@@ -23,6 +24,10 @@ class _OtpVerificationState extends State<OtpVerification> {
 
   @override
   void initState() {
+
+    if(UniversalPlatform.isWeb)
+      AuthService.instance.webSignIn(widget.countryCode + widget.mobileNumber);
+    else
     AuthService.instance.verifyPhone(widget.countryCode + widget.mobileNumber);
     super.initState();
   }
@@ -33,7 +38,7 @@ class _OtpVerificationState extends State<OtpVerification> {
   Widget build(BuildContext context) {
 //    verifyPhone();
     return Scaffold(
-      backgroundColor: Colors.white24,
+      backgroundColor: Colors.white12,
       appBar: AppBar(
         automaticallyImplyLeading: true,
         leading: BackButton(
@@ -172,7 +177,11 @@ class _OtpVerificationState extends State<OtpVerification> {
       showLoading = true;
     });
 //                      Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
-
+    if(UniversalPlatform.isWeb)
+      AuthService.instance.verifyOTPWeb(enteredOtp);
+      else
     AuthService.instance.signInWithOTP(enteredOtp);
+
+
   }
 }

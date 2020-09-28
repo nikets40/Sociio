@@ -42,6 +42,10 @@ dependencies:
   cupertino_icons:
   social_media_widgets: ^1.0.0+2
   cached_network_image: ^2.3.2+1
+  path_provider: 1.6.14
+  universal_platform:
+  device_preview:
+
 
 
 dev_dependencies:

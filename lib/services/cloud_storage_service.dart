@@ -16,7 +16,7 @@ class CloudStorageService {
   }
 
    uploadUserImage(File _image) async {
-     final User user =  FirebaseAuth.instanceFor().currentUser;
+     final User user =  FirebaseAuth.instance.currentUser;
     try {
         await _baseRef
             .child(profileImages)

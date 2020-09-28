@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nixmessenger/services/auth_service.dart';
+import 'package:nixmessenger/services/db_service.dart';
 import 'package:nixmessenger/services/navigation_service.dart';
 
 class PopUpMenu extends StatelessWidget {
@@ -46,6 +47,7 @@ class PopUpMenu extends StatelessWidget {
               break;
       case 6:
         print("LogOut Button Pressed");
+        await DBService.instance.updateIsOnline(false);
         await AuthService.instance.signOut();
         print("Logged out");
 

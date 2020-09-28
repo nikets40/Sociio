@@ -3,30 +3,34 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/material.dart';
 import 'package:nixmessenger/UI/Shared/styles.dart';
+import 'package:nixmessenger/models/user_model.dart';
 import 'package:nixmessenger/services/db_service.dart';
 
 class ChatsScreen extends StatefulWidget {
-  final String image;
-  final String name;
   final String conversationID;
   final String myID;
+  final otherUserID;
 
   ChatsScreen({
     this.conversationID,
+    this.otherUserID,
     this.myID,
-    this.image = "https://picsum.photos/id/${1001 + 1}/200/200",
-    this.name= "Niket Singh"});
+  });
 
   @override
   _ChatsScreenState createState() => _ChatsScreenState();
 }
 
-class _ChatsScreenState extends State<ChatsScreen> {
+class _ChatsScreenState extends State<ChatsScreen>
+    with AutomaticKeepAliveClientMixin {
   TextEditingController textEditingController;
   bool isTextFieldExpanded = false;
   ScrollController _scrollController = new ScrollController();
+
   @override
   void initState() {
     textEditingController = TextEditingController();
@@ -35,8 +39,10 @@ class _ChatsScreenState extends State<ChatsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     var iconColor = Colors.green;
     return Scaffold(
+      key: PageStorageKey('Chats Screen'),
       appBar: AppBar(
         leading: BackButton(
           onPressed: () {
@@ -48,37 +54,48 @@ class _ChatsScreenState extends State<ChatsScreen> {
           color: iconColor,
         ),
         titleSpacing: 0,
-        title: Row(
-          children: [
-            CircleAvatar(
-              backgroundImage: CachedNetworkImageProvider(widget.image),
-              radius: 20,
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Flexible(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.fade,
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
-                  ),
-                  Text(
-                    "last active 5 hours ago",
-                    style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.white54,
-                        fontWeight: FontWeight.w400),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
+        title: StreamBuilder<UserData>(
+            stream:
+                DBService.instance.fetchUserData(userUid: widget.otherUserID),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                UserData otherUser = snapshot.data;
+                return Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: CachedNetworkImageProvider(otherUser.profilePicture),
+                      radius: 20,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            otherUser?.name??otherUser.number,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 20),
+
+                          ),
+                          Text(
+                            otherUser?.isOnline??false ?"Online":timeago.format(otherUser.lastSeen.toDate()),
+                            style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.white54,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                );
+              }
+              return Container();
+            }),
         actions: [
           IconButton(
             onPressed: () {},
@@ -113,26 +130,27 @@ class _ChatsScreenState extends State<ChatsScreen> {
           Expanded(
             child: Container(
               child: StreamBuilder<DocumentSnapshot>(
-                stream:  FirebaseFirestore.instance
-              .collection("Conversations")
-              .doc(widget.conversationID)
-              .snapshots(),
-                builder: (context, snapshot) {
-                  if(snapshot.hasData)
-                    {
-                      Timer(Duration(milliseconds: 50),()=>{
-                        _scrollController.jumpTo(_scrollController.position.maxScrollExtent)
-                      });
+                  stream: FirebaseFirestore.instance
+                      .collection("Conversations")
+                      .doc(widget.conversationID)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      Timer(
+                          Duration(milliseconds: 50),
+                          () => {
+                                _scrollController.jumpTo(
+                                    _scrollController.position.maxScrollExtent)
+                              });
                       var document = snapshot.data;
                       return ChatsList(
                         myID: widget.myID,
                         document: document,
                         scrollController: _scrollController,
                       );
-                    }
-                  else return Container();
-                }
-              ),
+                    } else
+                      return Container();
+                  }),
             ),
           ),
           Padding(
@@ -198,6 +216,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
                               maxLines: 50,
                               minLines: 1,
                               onChanged: (val) {
+
+
                                 setState(() {
                                   if (val == "")
                                     isTextFieldExpanded = false;
@@ -228,13 +248,18 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   ),
                 ),
                 IconButton(
-                  onPressed: textEditingController.text == "" ? null : (){
-                    DBService.instance.sendMessage(
-                        textEditingController.text, widget.conversationID);
-                    setState(() {
-                      textEditingController.text = "";
-                    });
-                  },
+                  onPressed: textEditingController.text == ""
+                      ? null
+                      : () {
+                          DBService.instance.sendMessage(
+                              textEditingController.text,
+                              widget.conversationID,
+                            widget.otherUserID
+                          );
+                          setState(() {
+                            textEditingController.text = "";
+                          });
+                        },
                   icon: Icon(
                     Icons.send,
                     size: 30,
@@ -248,6 +273,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
       )),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class ChatsList extends StatelessWidget {
@@ -255,19 +283,23 @@ class ChatsList extends StatelessWidget {
   final DocumentSnapshot document;
   final String myID;
 
-  ChatsList({@required this.scrollController, @required this.document, @required this.myID});
+  ChatsList(
+      {@required this.scrollController,
+      @required this.document,
+      @required this.myID});
 
   @override
   Widget build(BuildContext context) {
-    var doc = document.data();
+    var doc = document?.data()??Map();
     return ListView.builder(
-        itemCount: doc["messages"].length,
+        itemCount: doc["messages"]?.length??0,
         controller: scrollController,
         itemBuilder: (context, index) {
           bool myMessage = doc["messages"][index]["senderID"] == myID;
           bool isPreviousMessageMine = false;
-          if(index>0)
-            isPreviousMessageMine =doc["messages"][index-1]["senderID"] == doc["messages"][index]["senderID"];
+          if (index > 0)
+            isPreviousMessageMine = doc["messages"][index - 1]["senderID"] ==
+                doc["messages"][index]["senderID"];
           return Align(
             alignment: myMessage
                 ? AlignmentDirectional.centerEnd
@@ -278,7 +310,8 @@ class ChatsList extends StatelessWidget {
                 maxWidth: screenWidth(context) * 0.85,
               ),
               child: Padding(
-                padding: EdgeInsets.only(left:8.0,right:8 ,top: isPreviousMessageMine?1:15),
+                padding: EdgeInsets.only(
+                    left: 8.0, right: 8, top: isPreviousMessageMine ? 1 : 15),
                 child: Container(
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(

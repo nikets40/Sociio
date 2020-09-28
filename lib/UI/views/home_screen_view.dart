@@ -51,7 +51,9 @@ class _HomeScreenState extends State<HomeScreen>
             ),
           ],
         ),
-        actions: [PopUpMenu()],
+        actions: [Theme(
+            data: ThemeData.dark(),
+            child: PopUpMenu())],
 
       ),
       floatingActionButton: FloatingActionButton(

@@ -25,6 +25,9 @@ class _StoryScreenState extends State<StoryScreen> {
   int currentImageIndex = 0;
   PageController _pageController;
   int currentPage;
+  String heroTag;
+  double headerOpacity;
+  bool hideHeader;
 
   @override
   void initState() {
@@ -34,6 +37,9 @@ class _StoryScreenState extends State<StoryScreen> {
     _pageController =
         new PageController(initialPage: widget.initialPage, keepPage: true);
     currentPage = widget.initialPage;
+    heroTag = widget.data[widget.initialPage].documentID;
+    headerOpacity = 1;
+    hideHeader = false;
   }
 
   @override
@@ -52,8 +58,20 @@ class _StoryScreenState extends State<StoryScreen> {
         onPointerMove: (_) {
           position();
         },
+        onPointerDown: (_) {
+          hideHeader = true;
+          Future.delayed(Duration(milliseconds: 300)).then((value) {
+            if (hideHeader)
+              setState(() {
+                headerOpacity = 0;
+              });
+          });
+        },
         onPointerUp: (_) {
+          print("Should pop now");
+          hideHeader = false;
           setState(() {
+            headerOpacity = 1;
             opacity = 0;
           });
 
@@ -61,29 +79,37 @@ class _StoryScreenState extends State<StoryScreen> {
             position();
           });
         },
-        child: Dismissible(
-          key: const Key('key'),
-          onDismissed: (dir) {
-            opacity = 0;
+        child: Hero(
+          tag: heroTag,
+          child: Container(
+            child: Dismissible(
+              background: Container(
+                color: Colors.black.withOpacity(opacity),
+              ),
+              key: const Key('key'),
+              onDismissed: (dir) {
+                opacity = 0;
 
-            print("dismissed");
-            Navigator.pop(context);
-          },
-          direction: DismissDirection.down,
-          child: Hero(
-            tag: widget.data[widget.initialPage].documentID,
-            child: Container(
-                key: containerKey,
-                child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    currentPage = index;
-                  },
-                  children: storyList(),
-                )
+                print("dismissed");
+                Navigator.pop(context,currentPage.toDouble());
+              },
+              direction: DismissDirection.down,
+              child: Container(
+                  key: containerKey,
+                  child: PageView(
+                    controller: _pageController,
+                    onPageChanged: (index) {
+                      setState(() {
+                        currentPage = index;
+                        heroTag = widget.data[currentPage].documentID;
+                      });
+                    },
+                    children: storyList(),
+                  )
 
-                // initialPage: widget.initialPage, children: storyList()),
-                ),
+                  // initialPage: widget.initialPage, children: storyList()),
+                  ),
+            ),
           ),
         ),
       ),
@@ -108,13 +134,14 @@ class _StoryScreenState extends State<StoryScreen> {
             });
         },
         child: Story(
+          progressOpacityDuration: Duration(milliseconds: 300),
           onFlashForward: () async {
             if (i < widget.data.length - 1)
               _pageController.nextPage(
                   duration: Duration(milliseconds: 300),
                   curve: Curves.decelerate);
-            // else
-            //   Navigator.pop(context);
+            else
+              Navigator.pop(context,currentPage.toDouble());
           },
           onFlashBack: () async {
             if (i > 0)
@@ -122,7 +149,7 @@ class _StoryScreenState extends State<StoryScreen> {
                   duration: Duration(milliseconds: 300),
                   curve: Curves.decelerate);
             else
-              Navigator.pop(context);
+              Navigator.pop(context,currentPage.toDouble());
           },
           momentCount: story.length,
           fullscreen: false,
@@ -132,16 +159,15 @@ class _StoryScreenState extends State<StoryScreen> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Center(
-                    child: AspectRatio(
-                      aspectRatio: 9 / 16,
+                  Container(
+                    child: Center(
                       child: Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             image: DecorationImage(
                                 image: CachedNetworkImageProvider(
                                     story[idx].source),
-                                fit: BoxFit.fitWidth)),
+                                fit: BoxFit.contain)),
                       ),
                     ),
                   ),
@@ -150,63 +176,91 @@ class _StoryScreenState extends State<StoryScreen> {
                     // height: screenSize.height,
                     // width: screenSize.width,
                     decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: [
-                      Colors.black.withOpacity(0.9),
-                      Colors.transparent,
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.6)
-                    ], begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                          stops: [0,0.14,0.9,1]
-                        )),
+                        gradient: LinearGradient(
+                            colors: [
+                              Colors.black.withOpacity(0.9),
+                              Colors.transparent,
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.6)
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            stops: [0, 0.14, 0.9, 1])),
                   ),
 
                   ///Todo Complete the Story Heading
                   Positioned(
                     top: ScreenUtil.instance.setHeight(50),
                     left: ScreenUtil.instance.setWidth(11),
-                    child: Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.grey,
-                            radius: ScreenUtil.instance.setWidth(20),
-                            backgroundImage: CachedNetworkImageProvider(
-                                widget.data[currentPage].userImage),
-                          ),
-                          SizedBox(
-                            width: ScreenUtil.instance.setWidth(8),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: ScreenUtil.instance.setHeight(2)),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  widget.data[currentPage].userName,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: ScreenUtil.instance.setSp(15)),
-                                ),
-                                Text(
-                                  getTime(story[idx].time),
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w300,
-                                      fontSize: ScreenUtil.instance.setSp(13)),
-                                ),
-                              ],
+                    child: AnimatedOpacity(
+                      opacity: headerOpacity,
+                      duration: Duration(milliseconds: 300),
+                      child: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: Colors.grey,
+                              radius: ScreenUtil.instance.setWidth(20),
+                              backgroundImage: CachedNetworkImageProvider(
+                                  widget.data[currentPage].userImage),
                             ),
-                          ),
-                        ],
+                            SizedBox(
+                              width: ScreenUtil.instance.setWidth(8),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  top: ScreenUtil.instance.setHeight(2)),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.data[currentPage].userName,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize:
+                                            ScreenUtil.instance.setSp(15)),
+                                  ),
+                                  if(story[idx]?.time != null)
+                                  Text(
+                                    getTime(story[idx].time),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w300,
+                                        fontSize:
+                                            ScreenUtil.instance.setSp(13)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  )
+                  ),
+                  if (story[idx]?.caption?.isNotEmpty ?? false)
+                    Positioned(
+                      bottom: MediaQuery.of(context).size.height * 0.1,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        color: Colors.black.withOpacity(0.3),
+                        child: Padding(
+                          padding:
+                              EdgeInsets.all(ScreenUtil.instance.setHeight(10)),
+                          child: Text(
+                            story[idx].caption,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: ScreenUtil.instance.setSp(18)),
+                          ),
+                        ),
+                      ),
+                    )
                 ],
               ),
             );
@@ -231,10 +285,15 @@ class _StoryScreenState extends State<StoryScreen> {
       double y = position.dy;
       print("position on y axis $y"); //this is y - I think it's what you want
       opacity = y / MediaQuery.of(context).size.height;
-      print(opacity);
+      if(opacity>0.7)
+        Navigator.pop(context,currentPage.toDouble());
+      else
+      {
+        print(opacity);
+
       setState(() {
         opacity = 1 - opacity;
-      });
+      });}
     }
   }
 }

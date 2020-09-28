@@ -8,6 +8,7 @@ class ChatsListTile extends StatelessWidget {
   final String dateTimeLastMessage;
   final int unReadMessages;
   final bool isChatMuted;
+  final bool isOnline;
 
   ChatsListTile(
       {@required this.image,
@@ -15,21 +16,40 @@ class ChatsListTile extends StatelessWidget {
       @required this.lastMessage,
       @required this.dateTimeLastMessage,
       @required this.unReadMessages,
+      @required this.isOnline,
       this.isChatMuted = false});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 10,),
+        SizedBox(
+          height: 10,
+        ),
         Container(
           margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
           child: Row(
             children: [
-              CircleAvatar(
-                radius: 25,
-                backgroundImage: CachedNetworkImageProvider(image),
-                backgroundColor: Colors.transparent,
+              SizedBox(
+                width: 50,
+                height: 50,
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundImage: CachedNetworkImageProvider(image),
+                      backgroundColor: Colors.transparent,
+                    ),
+                    if(isOnline??false)
+                    Align(
+                      alignment: AlignmentDirectional.bottomEnd,
+                      child: CircleAvatar(
+                        radius: 8,
+                        backgroundColor: Colors.green,
+                      ),
+                    )
+                  ],
+                ),
               ),
               SizedBox(
                 width: 12,
@@ -67,8 +87,9 @@ class ChatsListTile extends StatelessWidget {
                           Text(
                             dateTimeLastMessage,
                             style: TextStyle(
-                                color:
-                                    unReadMessages > 0 ? Colors.green : Colors.grey),
+                                color: unReadMessages > 0
+                                    ? Colors.green
+                                    : Colors.grey),
                           ),
                           SizedBox(
                             height: 8,
@@ -114,7 +135,6 @@ class ChatsListTile extends StatelessWidget {
             ],
           ),
         ),
-
         Padding(
           padding: EdgeInsets.only(top: 5),
           child: Align(
@@ -123,7 +143,6 @@ class ChatsListTile extends StatelessWidget {
               height: 0.5,
               width: MediaQuery.of(context).size.width * 0.73,
               color: Colors.white12,
-
             ),
           ),
         )

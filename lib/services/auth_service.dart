@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nixmessenger/UI/views/home_screen_view.dart';
 import 'package:nixmessenger/UI/views/login_view.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 import 'db_service.dart';
 import 'navigation_service.dart';
@@ -11,6 +12,8 @@ class AuthService {
   bool registrationStarted;
   String mobileNumber;
   String verificationId;
+  UserCredential userCredential;
+  ConfirmationResult webSignInConfirmationResult;
 
   static AuthService instance = AuthService();
 
@@ -80,7 +83,20 @@ class AuthService {
         verificationFailed: verificationFailed,
         codeSent: smsSent,
         codeAutoRetrievalTimeout: autoTimeout);
+
   }
+
+  webSignIn(String phoneNumber)async{
+    FirebaseAuth auth = FirebaseAuth.instance;
+    print("web sign called");
+    webSignInConfirmationResult = await auth.signInWithPhoneNumber(phoneNumber,RecaptchaVerifier());
+    print("webSignInConfirmationResult is $webSignInConfirmationResult");
+  }
+
+  verifyOTPWeb(String otp) async {
+    userCredential =  await webSignInConfirmationResult.confirm(otp);
+  }
+
 
   checkUserExists() async {
     final User user = FirebaseAuth.instance.currentUser;
@@ -93,6 +109,7 @@ class AuthService {
         await DBService.instance.createUserInDB(mobileNumber, user.uid);
         NavigationService.instance.navigateTo("profile_info");
       } else {
+        DBService.instance.updateIsOnline(true);
         NavigationService.instance.navigateToWithClearTop("home");
       }
     });

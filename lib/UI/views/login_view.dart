@@ -1,9 +1,9 @@
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nixmessenger/UI/Shared/styles.dart';
 import 'package:nixmessenger/UI/widgets/mobile_number_field_widget.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 import 'otp_verification_view.dart';
 
@@ -26,17 +26,9 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white24,
+      backgroundColor: Colors.white12,
       appBar: AppBar(
         brightness: Brightness.dark,
-        leading: (Platform.isAndroid)
-            ? BackButton(
-                color: Colors.green,
-                onPressed: () {
-                  exit(0);
-                },
-              )
-            : null,
         centerTitle: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -132,7 +124,7 @@ class _LoginViewState extends State<LoginView> {
   void confirmationDialog() {
     // flutter defined function
 
-    if (Platform.isIOS)
+    if (UniversalPlatform.isIOS)
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {

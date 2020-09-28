@@ -4,8 +4,8 @@ import 'package:nixmessenger/UI/views/home_screen_view.dart';
 import 'package:nixmessenger/UI/views/login_view.dart';
 import 'package:nixmessenger/UI/views/profile_info.dart';
 import 'package:nixmessenger/services/auth_service.dart';
+import 'package:nixmessenger/services/db_service.dart';
 import 'package:nixmessenger/services/navigation_service.dart';
-import 'package:nixmessenger/utils/screen_util.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +15,6 @@ void main() {
 class App extends StatelessWidget {
   // Create the initilization Future outside of `build`:
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +39,31 @@ class App extends StatelessWidget {
   }
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    DBService.instance.updateIsOnline(true);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("update");
+    if (state == AppLifecycleState.resumed)
+      DBService.instance.updateIsOnline(true);
+    else {
+      DBService.instance.updateIsOnline(false);
+      DBService.instance.updateLastSeen();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -50,6 +73,7 @@ class MyApp extends StatelessWidget {
           primaryColor: Colors.green,
           primarySwatch: Colors.green,
           canvasColor: Colors.black,
+          bottomSheetTheme: BottomSheetThemeData(modalBackgroundColor: Colors.black12,backgroundColor: Colors.black12),
           appBarTheme: AppBarTheme(
               color: Colors.black,
               centerTitle: false,

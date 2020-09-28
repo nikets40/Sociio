@@ -24,8 +24,8 @@ class ContactsListTile extends StatelessWidget {
             onTap: () {},
             child: CircleAvatar(
               radius: 25,
-              backgroundColor: Colors.transparent,
-              backgroundImage: CachedNetworkImageProvider(image),
+              backgroundColor: Colors.white12,
+              backgroundImage: image!=null?CachedNetworkImageProvider(image): null,
             ),
           ),
           SizedBox(
