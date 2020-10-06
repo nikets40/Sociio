@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nixmessenger/services/auth_service.dart';
 import 'package:nixmessenger/services/db_service.dart';
@@ -12,26 +13,26 @@ class PopUpMenu extends StatelessWidget {
         onSelected(value);
       },
       itemBuilder: (context) => [
-        PopupMenuItem(
-          value: 1,
-          child: Text("New group"),
-        ),
-        PopupMenuItem(
-          value: 2,
-          child: Text("New broadcast"),
-        ),
-        PopupMenuItem(
-          value: 3,
-          child: Text("WhatsApp Web"),
-        ),
-        PopupMenuItem(
-          value: 4,
-          child: Text("Starred messages"),
-        ),
-        PopupMenuItem(
-          value: 5,
-          child: Text("Settings"),
-        ),
+        // PopupMenuItem(
+        //   value: 1,
+        //   child: Text("New group"),
+        // ),
+        // PopupMenuItem(
+        //   value: 2,
+        //   child: Text("New broadcast"),
+        // ),
+        // PopupMenuItem(
+        //   value: 3,
+        //   child: Text("WhatsApp Web"),
+        // ),
+        // PopupMenuItem(
+        //   value: 4,
+        //   child: Text("Starred messages"),
+        // ),
+        // PopupMenuItem(
+        //   value: 5,
+        //   child: Text("Settings"),
+        // ),
         PopupMenuItem(
           value: 6,
           child: Text("Logout"),
@@ -47,7 +48,8 @@ class PopUpMenu extends StatelessWidget {
               break;
       case 6:
         print("LogOut Button Pressed");
-        await DBService.instance.updateIsOnline(false);
+        if(FirebaseAuth.instance.currentUser != null)
+        await DBService.instance.updateIsOnline(isOnline: false,userUID: FirebaseAuth.instance.currentUser.uid);
         await AuthService.instance.signOut();
         print("Logged out");
 

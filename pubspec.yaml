@@ -25,7 +25,8 @@ dependencies:
     sdk: flutter
   mock_data:
   intl:
-  country_code_picker:
+  photo_view:
+  country_code_picker: ^1.5.0
   pin_code_fields:
   firebase_core:
   cloud_firestore:

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -71,6 +72,7 @@ class _ContactsTabState extends State<ContactsTab> {
                 stream: DBService.instance.fetchAllUsers(),
                 builder: (context, snapshot) {
                   if(snapshot.hasData){
+                    snapshot.data.removeWhere((element) => element.userID== FirebaseAuth.instance.currentUser.uid);
                     return ListView.separated(
                       separatorBuilder: (context, index) {
                         if(currentPage == 0 && !(snapshot.data[index]?.isOnline??false)){
@@ -91,9 +93,8 @@ class _ContactsTabState extends State<ContactsTab> {
                         }
                         return GestureDetector(
                           onTap:(){
-                            print(DBService.user.uid);
-                            DBService.instance.createOrGetConversation(recipientID:data.userID, onSuccess:(_conversationID)async{
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatsScreen(otherUserID: data.userID,conversationID: _conversationID,myID: DBService.user.uid,)));
+                            DBService.instance.createOrGetConversation(userUID: FirebaseAuth.instance.currentUser.uid,recipientID:data.userID, onSuccess:(_conversationID)async{
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatsScreen(otherUserID: data.userID,conversationID: _conversationID,myID: FirebaseAuth.instance.currentUser.uid,)));
                             });
                           },
                           child: ContactsListTile(

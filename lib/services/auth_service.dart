@@ -1,9 +1,10 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nixmessenger/UI/views/home_screen_view.dart';
 import 'package:nixmessenger/UI/views/login_view.dart';
-import 'package:universal_platform/universal_platform.dart';
 
 import 'db_service.dart';
 import 'navigation_service.dart';
@@ -20,7 +21,7 @@ class AuthService {
   AuthService({this.registrationStarted = false});
 
   //Handles Auth
-  handleAuth() {
+  handleAuth(){
     return StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (BuildContext context, snapshot) {
@@ -29,8 +30,7 @@ class AuthService {
             return Container();
 
           if (snapshot.hasData) {
-            print("authenticated");
-            return HomeScreen();
+              return HomeScreen();
           } else {
             return LoginView();
           }
@@ -44,16 +44,19 @@ class AuthService {
 
   //SignIn
   signIn(AuthCredential authCreds) async {
-    FirebaseAuth.instance
-        .signInWithCredential(authCreds)
-        .whenComplete(() => checkUserExists());
-//     await checkUser();
+      FirebaseAuth.instance.signInWithCredential(authCreds).whenComplete(() => checkUserExists());
   }
 
   signInWithOTP(smsCode) {
-    AuthCredential authCreds = PhoneAuthProvider.credential(
-        verificationId: verificationId, smsCode: smsCode);
-    signIn(authCreds);
+    try{
+      AuthCredential authCreds = PhoneAuthProvider.credential(
+          verificationId: verificationId, smsCode: smsCode);
+      signIn(authCreds);
+    }catch(e){
+      log(e.toString());
+      return e;
+    }
+
   }
 
   Future<void> verifyPhone(phoneNo) async {
@@ -86,13 +89,6 @@ class AuthService {
 
   }
 
-  webSignIn(String phoneNumber)async{
-    FirebaseAuth auth = FirebaseAuth.instance;
-    print("web sign called");
-    webSignInConfirmationResult = await auth.signInWithPhoneNumber(phoneNumber,RecaptchaVerifier());
-    print("webSignInConfirmationResult is $webSignInConfirmationResult");
-  }
-
   verifyOTPWeb(String otp) async {
     userCredential =  await webSignInConfirmationResult.confirm(otp);
   }
@@ -109,7 +105,8 @@ class AuthService {
         await DBService.instance.createUserInDB(mobileNumber, user.uid);
         NavigationService.instance.navigateTo("profile_info");
       } else {
-        DBService.instance.updateIsOnline(true);
+        if(FirebaseAuth.instance.currentUser!= null)
+        DBService.instance.updateIsOnline(isOnline:true,userUID: FirebaseAuth.instance.currentUser.uid);
         NavigationService.instance.navigateToWithClearTop("home");
       }
     });

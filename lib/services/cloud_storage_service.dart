@@ -9,6 +9,7 @@ class CloudStorageService {
   FirebaseStorage _storage;
   StorageReference _baseRef;
   String profileImages = "profile_images";
+  String images = "images";
 
   CloudStorageService() {
     _storage = FirebaseStorage.instance;
@@ -28,6 +29,26 @@ class CloudStorageService {
 
 //        print(imageUrl);
         return imageUrl.toString();
+    }
+    catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  uploadMedia(File _image)async{
+    final User user =  FirebaseAuth.instance.currentUser;
+    try {
+      await _baseRef
+          .child("messages")
+          .child(images)
+          .child(user.uid)
+          .putFile(_image)
+          .onComplete;
+
+      var imageUrl = await _baseRef.child("messages").child(images).child(user.uid).getDownloadURL();
+
+      return imageUrl.toString();
     }
     catch (e) {
       print(e);

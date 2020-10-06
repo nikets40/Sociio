@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen>
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
-        onPressed: () {},
+        onPressed: fabOnPress,
         child: fabIcon(),
       ),
       body: Container(
@@ -114,4 +114,12 @@ class _HomeScreenState extends State<HomeScreen>
         );
     }
   }
+  fabOnPress(){
+    switch (tabController.index) {
+      case 0:
+        return tabController.animateTo(2,curve: Curves.decelerate);
+      default: return (){};
+    }
+  }
+
 }

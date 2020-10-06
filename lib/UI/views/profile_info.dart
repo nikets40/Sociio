@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nixmessenger/UI/Shared/styles.dart';
 import 'package:nixmessenger/UI/widgets/busy_overlay_widget.dart';
@@ -17,6 +18,14 @@ class _ProfileInfoViewState extends State<ProfileInfoView> {
   final TextEditingController _controller = new TextEditingController();
   File image;
   var showLoading = false;
+  String userUID;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    userUID = FirebaseAuth.instance.currentUser.uid;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +33,7 @@ class _ProfileInfoViewState extends State<ProfileInfoView> {
       show: showLoading,
       title: "Please Wait\nCreating Profile",
       child: Scaffold(
-        backgroundColor: Colors.white24,
+        backgroundColor: Colors.white12,
         appBar: AppBar(
           brightness: Brightness.dark,
           backgroundColor: Colors.transparent,
@@ -57,24 +66,34 @@ class _ProfileInfoViewState extends State<ProfileInfoView> {
                   height: 20,
                 ),
                 Center(
-                  child: InkWell(
+                  child: ClipOval(
+                    child: Material(
+                      color: Colors.grey[350],
+                      child: InkWell(
+                        radius:screenWidth(context) / 6,
+                        splashColor: Colors.black26,
+                        onTap: () async {
+                          try{
+                            image = await MediaService.instance.getImageFromLibrary().then((value) => File(value.path));
+                            if(image!=null)
+                              setState(() {});
+                          }catch(e){print(e);}
 
-                    onTap: () async {
-                      image = await MediaService.instance.getImageFromLibrary();
-                      setState(() {});
-                    },
-                    child: CircleAvatar(
-                        radius: screenWidth(context) / 6,
-                        backgroundColor: Colors.grey[350],
-                        child: image == null
-                            ? Icon(
-                                Icons.camera_alt,
-                                size: 60,
-                                color: Colors.grey[500],
-                              )
-                            : null,
-                        backgroundImage:
-                            image != null ? FileImage(image) : null),
+                        },
+                        child: CircleAvatar(
+                            radius: screenWidth(context) / 6,
+                            backgroundColor: Colors.transparent,
+                            child: image == null
+                                ? Icon(
+                                    Icons.camera_alt,
+                                    size: 60,
+                                    color: Colors.grey[500],
+                                  )
+                                : null,
+                            backgroundImage:
+                                image != null ? FileImage(image) : null),
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -119,7 +138,7 @@ class _ProfileInfoViewState extends State<ProfileInfoView> {
                       var imageURl = (await CloudStorageService.instance
                           .uploadUserImage(image));
                       await DBService.instance
-                          .addProfileInfoInDB(_controller.text, imageURl);
+                          .addProfileInfoInDB(name:_controller.text, profilePicture:imageURl,userUid: userUID);
                       NavigationService.instance.navigateToWithClearTop("home");
                     },
                   ),

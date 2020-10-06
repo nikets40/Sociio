@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:nixmessenger/UI/views/home_screen_view.dart';
@@ -50,18 +51,20 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    DBService.instance.updateIsOnline(true);
+    if(FirebaseAuth.instance.currentUser!= null)
+    DBService.instance.updateIsOnline(isOnline:true,userUID: FirebaseAuth.instance.currentUser.uid);
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     print("update");
-    if (state == AppLifecycleState.resumed)
-      DBService.instance.updateIsOnline(true);
+    if(FirebaseAuth.instance.currentUser!= null)
+    {  if (state == AppLifecycleState.resumed)
+      DBService.instance.updateIsOnline(isOnline:true,userUID: FirebaseAuth.instance.currentUser.uid);
     else {
-      DBService.instance.updateIsOnline(false);
+      DBService.instance.updateIsOnline(isOnline:false,userUID: FirebaseAuth.instance.currentUser.uid);
       DBService.instance.updateLastSeen();
-    }
+    }}
   }
 
   @override
@@ -73,7 +76,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           primaryColor: Colors.green,
           primarySwatch: Colors.green,
           canvasColor: Colors.black,
-          bottomSheetTheme: BottomSheetThemeData(modalBackgroundColor: Colors.black12,backgroundColor: Colors.black12),
           appBarTheme: AppBarTheme(
               color: Colors.black,
               centerTitle: false,

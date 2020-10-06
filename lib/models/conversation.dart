@@ -1,33 +1,46 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ConversationSnippet {
+class Conversation {
   final String id;
-  final String conversationID;
-  final String name;
-  final String profilePicture;
-  final String lastMessage;
-  final int unseenCount;
-  final Timestamp timestamp;
+  final List members;
+  final List<Messages> messages;
+  final String ownerID;
 
-  ConversationSnippet(
-      {this.id,
-      this.conversationID,
-      this.lastMessage,
-      this.name,
-      this.profilePicture,
-      this.timestamp,
-      this.unseenCount});
 
-      factory ConversationSnippet.fromFirestore(DocumentSnapshot snapshot){
+  Conversation({this.id, this.members, this.messages, this.ownerID});
+
+  factory Conversation.fromFirestore(DocumentSnapshot snapshot){
         var data = snapshot.data();
-        return ConversationSnippet(
+        List<Messages> messages;
+        if (data['messages'] != null) {
+          messages = new List<Messages>();
+          data['messages'].forEach((v) {
+            messages.add(new Messages.fromMap(v));
+          });
+        }
+        return Conversation(
           id: snapshot.id,
-          conversationID: data["conversationID"],
-          name:data["name"],
-          profilePicture:data["profilePicture"],
-          lastMessage: data["lastMessage"],
-          unseenCount: data["unseenCount"],
-          timestamp: data["timestamp"], 
+          messages: messages,
+          members: data['members'],
+          ownerID: data['ownerId'],
         ) ;
       }
+}
+
+class Messages{
+  final String message;
+  final String senderID;
+  final String type;
+  final Timestamp time;
+
+  Messages({this.message, this.senderID, this.type, this.time});
+
+  factory Messages.fromMap(Map messageData){
+    return Messages(
+      time: messageData['timestamp'],
+      message: messageData['message'],
+      senderID: messageData['senderID'],
+      type: messageData['type']
+    );
+  }
 }

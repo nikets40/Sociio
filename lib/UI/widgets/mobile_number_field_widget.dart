@@ -20,13 +20,13 @@ class MobileNumberField extends StatelessWidget {
       child: Row(
         children: [
           CountryCodePicker(
-            searchStyle: TextStyle(color: Colors.white),
+            searchStyle: TextStyle(color: Colors.black),
             onChanged: (code) {
               print("Selected Country code is $code");
               countryCode(code.toString());
             },
             textStyle: TextStyle(color: Colors.white),
-            dialogTextStyle: TextStyle(color: Colors.white70),
+            dialogTextStyle: TextStyle(color: Colors.black),
             initialSelection: initialSelection,
             showCountryOnly: false,
             showOnlyCountryWhenClosed: false,
@@ -46,4 +46,5 @@ class MobileNumberField extends StatelessWidget {
       ),
     );
   }
+
 }

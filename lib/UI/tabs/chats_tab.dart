@@ -9,7 +9,7 @@ import 'package:mock_data/mock_data.dart';
 import 'package:nixmessenger/UI/views/chats_screen_view.dart';
 import 'package:nixmessenger/UI/widgets/chats_list_tile_widget.dart';
 import 'package:nixmessenger/UI/widgets/status_widget.dart';
-import 'package:nixmessenger/models/conversation.dart';
+import 'package:nixmessenger/models/conversation_snipped.dart';
 import 'package:nixmessenger/services/db_service.dart';
 
 import '../widgets/status_widget.dart';
@@ -65,7 +65,7 @@ class _ChatsTabState extends State<ChatsTab> {
         stream: DBService.instance.getUserConversations(user),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Text("loading");
+            return Container();
           }
           var chats = snapshot.data;
           chats.removeWhere((element) => element?.timestamp == null);
@@ -90,7 +90,7 @@ class _ChatsTabState extends State<ChatsTab> {
                                   conversationID: chats[index].conversationID,
                                   otherUserID: chats[index].id,
                                   myID: user)));
-                      DBService.instance.resetUnseenCount(chats[index].id);
+                      DBService.instance.resetUnseenCount(documentID:chats[index].id,userUID: FirebaseAuth.instance.currentUser.uid);
                     },
                     child: ChatsListTile(
                       isOnline: snapshot.data.isOnline,

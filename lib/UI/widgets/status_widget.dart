@@ -48,7 +48,7 @@ class _StatusWidgetState extends State<StatusWidget> {
                   children: [
                     Center(
                       child: StreamBuilder<UserData>(
-                        stream: DBService.instance.fetchUserData(),
+                        stream: DBService.instance.fetchUserData(userUid: user.uid),
                         builder: (context, snapshot) {
                           if(snapshot.hasData)
                           return CircleAvatar(
@@ -92,7 +92,7 @@ class _StatusWidgetState extends State<StatusWidget> {
             width: 8,
           ),
           StreamBuilder<List<Stories>>(
-              stream: DBService.instance.getAllStories(DBService.user.uid),
+              stream: DBService.instance.getAllStories(FirebaseAuth.instance.currentUser.uid),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   var storiesList = snapshot.data;
