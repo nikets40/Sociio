@@ -31,8 +31,8 @@ class ChatsListTile extends StatelessWidget {
           child: Row(
             children: [
               SizedBox(
-                width: 50,
-                height: 50,
+                width: 52,
+                height: 52,
                 child: Stack(
                   children: [
                     CircleAvatar(
@@ -44,8 +44,12 @@ class ChatsListTile extends StatelessWidget {
                     Align(
                       alignment: AlignmentDirectional.bottomEnd,
                       child: CircleAvatar(
-                        radius: 8,
-                        backgroundColor: Colors.green,
+                        radius: 11,
+                        backgroundColor: Color(0xff1f1f1f),
+                        child: CircleAvatar(
+                          radius: 7,
+                          backgroundColor: Colors.green,
+                        ),
                       ),
                     )
                   ],

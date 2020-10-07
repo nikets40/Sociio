@@ -9,8 +9,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="nixmessenger"
-        android:icon="@mipmap/ic_launcher"
+        android:label="Nix Chat"
+        android:icon="@mipmap/launcher_icon"
         tools:targetApi="q">
         <activity
             android:name=".MainActivity"

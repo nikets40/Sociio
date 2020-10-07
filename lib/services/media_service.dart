@@ -8,7 +8,7 @@ class MediaService{
   static MediaService instance = MediaService();
   final picker = ImagePicker();
 
-  Future<PickedFile> getImageFromLibrary() async{
+  Future<PickedFile> getImageFromLibrary(ImageSource source) async{
     try{
       return  await picker.getImage(source: ImageSource.gallery,maxHeight: 300);
     }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:nixmessenger/UI/Shared/styles.dart';
 import 'package:nixmessenger/UI/widgets/busy_overlay_widget.dart';
 import 'package:nixmessenger/services/cloud_storage_service.dart';
@@ -74,7 +75,7 @@ class _ProfileInfoViewState extends State<ProfileInfoView> {
                         splashColor: Colors.black26,
                         onTap: () async {
                           try{
-                            image = await MediaService.instance.getImageFromLibrary().then((value) => File(value.path));
+                            image = await MediaService.instance.getImageFromLibrary(ImageSource.gallery).then((value) => File(value.path));
                             if(image!=null)
                               setState(() {});
                           }catch(e){print(e);}

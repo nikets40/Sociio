@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nixmessenger/UI/tabs/call_tab.dart';
 import 'package:nixmessenger/UI/tabs/chats_tab.dart';
 import 'package:nixmessenger/UI/tabs/contacts_tab.dart';
 import 'package:nixmessenger/UI/widgets/popup_menu_widget.dart';
@@ -27,11 +26,13 @@ class _HomeScreenState extends State<HomeScreen>
           case 0:
             tabTitle = "Chats";
             break;
-          case 1:
-            tabTitle = "Calls";
-            break;
-          case 2:
-            tabTitle = "Contacts";
+          // case 1:
+          //   tabTitle = "Calls";
+          //   break;
+          // case 2:
+          //   tabTitle = "Contacts";
+          default: tabTitle = "Contacts";
+
         }
       });
     });
@@ -56,15 +57,18 @@ class _HomeScreenState extends State<HomeScreen>
             child: PopUpMenu())],
 
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green,
-        onPressed: fabOnPress,
-        child: fabIcon(),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   backgroundColor: Colors.green,
+      //   onPressed: fabOnPress,
+      //   child: fabIcon(),
+      // ),
       body: Container(
         child: TabBarView(
           controller: tabController,
-          children: [ChatsTab(), CallTab(), ContactsTab()],
+          children: [
+            ChatsTab(),
+            // CallTab(),
+            ContactsTab()],
         ),
       ),
       bottomNavigationBar: SafeArea(
@@ -89,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen>
       ),
       text: "Chats",
     ));
-    items.add(Tab(icon: Icon(Icons.call, size: 30), text: ("Calls")));
+    // items.add(Tab(icon: Icon(Icons.call, size: 30), text: ("Calls")));
     items.add(Tab(icon: Icon(Icons.person, size: 30), text: ("Contacts")));
     return items;
   }

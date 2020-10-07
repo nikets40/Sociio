@@ -99,6 +99,7 @@ class _ContactsTabState extends State<ContactsTab> {
                           },
                           child: ContactsListTile(
                             image:data.profilePicture ,
+                            isOnline: data.isOnline,
                             name: data?.name?? data.number,
                             status: data?.status??"Hey there I'm here",
                           ),

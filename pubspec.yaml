@@ -43,6 +43,7 @@ dependencies:
   cupertino_icons:
   social_media_widgets: ^1.0.0+2
   cached_network_image: ^2.3.2+1
+  image_editor_pro:
   path_provider: 1.6.14
   universal_platform:
   device_preview:
@@ -52,6 +53,15 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons:
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  adaptive_icon_background: "#4CAF50"
+#  adaptive_icon_foreground: "#4CAF50"
+  image_path_ios: "assets/images/icon_iOS.jpg"
+  image_path_android: "assets/images/Icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -185,6 +185,7 @@ class DBService {
           .doc(documentID)
           .update({"unseenCount": 0});
     }catch(e){
+      log("error in resetting unseen count $e");
       return null;
     }
 
@@ -221,7 +222,7 @@ class DBService {
         "lastMessage": messageDetails['message'],
         "timestamp": messageDetails['timestamp'],
         "type": messageDetails['type'],
-        "unseenCount": FieldValue.increment(1),
+        // "unseenCount": FieldValue.increment(1),
       });
 
       await _db

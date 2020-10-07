@@ -8,11 +8,9 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:mock_data/mock_data.dart';
 import 'package:nixmessenger/UI/views/chats_screen_view.dart';
 import 'package:nixmessenger/UI/widgets/chats_list_tile_widget.dart';
-import 'package:nixmessenger/UI/widgets/status_widget.dart';
 import 'package:nixmessenger/models/conversation_snipped.dart';
 import 'package:nixmessenger/services/db_service.dart';
 
-import '../widgets/status_widget.dart';
 
 class ChatsTab extends StatefulWidget {
   @override
@@ -43,7 +41,7 @@ class _ChatsTabState extends State<ChatsTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        StatusWidget(),
+        // StatusWidget(),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -76,36 +74,43 @@ class _ChatsTabState extends State<ChatsTab> {
             shrinkWrap: true,
             itemCount: chats.length,
             itemBuilder: (BuildContext context, int index) {
-              chats.sort((a,b)=>b.timestamp.toDate().compareTo(a.timestamp.toDate()));
+              chats.sort((a, b) =>
+                  b.timestamp.toDate().compareTo(a.timestamp.toDate()));
               return StreamBuilder<UserData>(
-                stream: DBService.instance.fetchUserData(userUid: chats[index].id),
-                builder: (context, snapshot) {
-                  if(snapshot.hasData)
-                  return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ChatsScreen(
-                                  conversationID: chats[index].conversationID,
-                                  otherUserID: chats[index].id,
-                                  myID: user)));
-                      DBService.instance.resetUnseenCount(documentID:chats[index].id,userUID: FirebaseAuth.instance.currentUser.uid);
-                    },
-                    child: ChatsListTile(
-                      isOnline: snapshot.data.isOnline,
-                      name: snapshot?.data?.name??snapshot?.data?.number,
-                      image: snapshot.data.profilePicture,
-                      dateTimeLastMessage:
-                      timeago.format(chats[index]?.timestamp?.toDate(),locale: 'en'),
-                      lastMessage: chats[index]?.lastMessage ?? "",
-                      unReadMessages: chats[index].unseenCount,
-                      isChatMuted: random.nextBool(),
-                    )
-                  );
-                  return Container();
-                }
-              );
+                  stream: DBService.instance
+                      .fetchUserData(userUid: chats[index].id),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData)
+                      return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ChatsScreen(
+                                          conversationID:
+                                              chats[index].conversationID,
+                                          otherUserID: chats[index].id,
+                                          myID: user,
+                                          documentID: chats[index].id,
+                                        )));
+                            DBService.instance.resetUnseenCount(
+                                documentID: chats[index].id,
+                                userUID: FirebaseAuth.instance.currentUser.uid);
+                          },
+                          child: ChatsListTile(
+                            isOnline: snapshot.data.isOnline,
+                            name:
+                                snapshot?.data?.name ?? snapshot?.data?.number,
+                            image: snapshot.data.profilePicture,
+                            dateTimeLastMessage: timeago.format(
+                                chats[index]?.timestamp?.toDate(),
+                                locale: 'en'),
+                            lastMessage: chats[index]?.lastMessage ?? "",
+                            unReadMessages: chats[index].unseenCount,
+                            isChatMuted: random.nextBool(),
+                          ));
+                    return Container();
+                  });
             },
           );
         });

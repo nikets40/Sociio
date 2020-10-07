@@ -5,11 +5,13 @@ class ContactsListTile extends StatelessWidget {
   final String name;
   final String status;
   final String image;
+  final bool isOnline;
 
   ContactsListTile({
     @required this.name,
     @required this.status,
     @required this.image,
+    @required this.isOnline
   });
 
   @override
@@ -22,10 +24,30 @@ class ContactsListTile extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: () {},
-            child: CircleAvatar(
-              radius: 25,
-              backgroundColor: Colors.white12,
-              backgroundImage: image!=null?CachedNetworkImageProvider(image): null,
+            child:  SizedBox(
+              width: 52,
+              height: 52,
+              child: Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundImage: CachedNetworkImageProvider(image),
+                    backgroundColor: Colors.transparent,
+                  ),
+                  if(isOnline??false)
+                    Align(
+                      alignment: AlignmentDirectional.bottomEnd,
+                      child: CircleAvatar(
+                        radius: 11,
+                        backgroundColor: Color(0xff1f1f1f),
+                        child: CircleAvatar(
+                          radius: 7,
+                          backgroundColor: Colors.green,
+                        ),
+                      ),
+                    )
+                ],
+              ),
             ),
           ),
           SizedBox(

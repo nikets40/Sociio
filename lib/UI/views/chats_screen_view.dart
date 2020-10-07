@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,9 +7,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:nixmessenger/UI/views/Image_fullscreen_view.dart';
+import 'package:nixmessenger/UI/views/send_media_screen.dart';
 import 'package:nixmessenger/models/conversation.dart';
 import 'package:nixmessenger/services/cloud_storage_service.dart';
 import 'package:nixmessenger/services/media_service.dart';
+import 'package:nixmessenger/services/navigation_service.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/material.dart';
 import 'package:nixmessenger/UI/Shared/styles.dart';
@@ -21,11 +22,13 @@ class ChatsScreen extends StatefulWidget {
   final String conversationID;
   final String myID;
   final otherUserID;
+  final String documentID;
 
   ChatsScreen({
     this.conversationID,
     this.otherUserID,
     this.myID,
+    this.documentID,
   });
 
   @override
@@ -38,6 +41,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   bool isTextFieldExpanded = false;
   ScrollController _scrollController = new ScrollController();
   String userUID;
+  UserData userData;
 
   @override
   void initState() {
@@ -68,13 +72,13 @@ class _ChatsScreenState extends State<ChatsScreen>
                 DBService.instance.fetchUserData(userUid: widget.otherUserID),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                UserData otherUser = snapshot.data;
+                userData = snapshot.data;
                 return Row(
                   children: [
                     CircleAvatar(
                       backgroundImage:
-                          CachedNetworkImageProvider(otherUser.profilePicture),
-                      radius: 20,
+                          CachedNetworkImageProvider(userData.profilePicture),
+                      radius: kToolbarHeight * 0.35,
                     ),
                     SizedBox(
                       width: 10,
@@ -84,16 +88,16 @@ class _ChatsScreenState extends State<ChatsScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            otherUser?.name ?? otherUser.number,
+                            userData?.name ?? userData.number,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                                 fontWeight: FontWeight.w600, fontSize: 20),
                           ),
                           Text(
-                            otherUser?.isOnline ?? false
+                            userData?.isOnline ?? false
                                 ? "Online"
-                                : timeago.format(otherUser.lastSeen.toDate()),
+                                : timeago.format(userData.lastSeen.toDate()),
                             style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.white54,
@@ -107,32 +111,32 @@ class _ChatsScreenState extends State<ChatsScreen>
               }
               return Container();
             }),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.call,
-              size: 30,
-              color: iconColor,
-            ),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.videocam,
-              size: 30,
-              color: iconColor,
-            ),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.more_vert,
-              size: 30,
-              color: iconColor,
-            ),
-          )
-        ],
+        // actions: [
+        //   IconButton(
+        //     onPressed: () {},
+        //     icon: Icon(
+        //       Icons.call,
+        //       size: 30,
+        //       color: iconColor,
+        //     ),
+        //   ),
+        //   IconButton(
+        //     onPressed: () {},
+        //     icon: Icon(
+        //       Icons.videocam,
+        //       size: 30,
+        //       color: iconColor,
+        //     ),
+        //   ),
+        //   IconButton(
+        //     onPressed: () {},
+        //     icon: Icon(
+        //       Icons.more_vert,
+        //       size: 30,
+        //       color: iconColor,
+        //     ),
+        //   )
+        // ],
       ),
       body: SafeArea(
           child: Column(
@@ -155,11 +159,11 @@ class _ChatsScreenState extends State<ChatsScreen>
                                     _scrollController.position.maxScrollExtent)
                               });
                       Conversation conversation = snapshot.data;
-
                       print("owner ID is ${conversation?.ownerID}");
+                      print("resetting unseen count");
                       DBService.instance.resetUnseenCount(
-                          documentID: widget.conversationID,
-                          userUID: userUID);
+                          documentID: widget.documentID,
+                          userUID: FirebaseAuth.instance.currentUser.uid);
 
                       return ChatsList(
                         myID: widget.myID,
@@ -181,7 +185,30 @@ class _ChatsScreenState extends State<ChatsScreen>
                     child: Row(
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            PickedFile image = await MediaService.instance
+                                .getImageFromLibrary(ImageSource.camera);
+
+                            bool sendImage = await NavigationService.instance
+                                .navigateToRoute(MaterialPageRoute(
+                                    builder: (_) => SendMediaScreen(
+                                          userData: userData,
+                                          image: File(image.path),
+                                        )));
+
+                            if (sendImage) {
+                              String imageURL = await CloudStorageService
+                                  .instance
+                                  .uploadMedia(File(image.path));
+                              showUploadingMedia();
+                              await DBService.instance.sendMessage(
+                                  message: imageURL,
+                                  conversationID: widget.conversationID,
+                                  recipientID: widget.otherUserID,
+                                  type: "image",
+                                  senderID: userUID);
+                            }
+                          },
                           icon: Icon(
                             Icons.camera_alt,
                             size: 30,
@@ -191,23 +218,36 @@ class _ChatsScreenState extends State<ChatsScreen>
                         IconButton(
                           onPressed: () async {
                             PickedFile image = await MediaService.instance
-                                .getImageFromLibrary();
-                            String imageURL = await CloudStorageService.instance
-                                .uploadMedia(File(image.path));
-                            showUploadingMedia();
-                            await DBService.instance.sendMessage(
-                                message: imageURL,
-                                conversationID: widget.conversationID,
-                                recipientID: widget.otherUserID,
-                                type: "image",
-                                senderID: userUID
-                            );
+                                .getImageFromLibrary(ImageSource.gallery);
 
+                            bool sendImage = await NavigationService.instance
+                                    .navigateToRoute(MaterialPageRoute(
+                                        builder: (_) => SendMediaScreen(
+                                              userData: userData,
+                                              image: File(image.path),
+                                            ))) ??
+                                false;
+
+                            if (sendImage) {
+                              String imageURL = await CloudStorageService
+                                  .instance
+                                  .uploadMedia(File(image.path));
+                              showUploadingMedia();
+                              await DBService.instance.sendMessage(
+                                  message: imageURL,
+                                  conversationID: widget.conversationID,
+                                  recipientID: widget.otherUserID,
+                                  type: "image",
+                                  senderID: userUID);
+                            }
                           },
                           icon: Transform.rotate(
-                            angle: -pi / 4,
+                            angle:
+                                // -pi / 4,
+                                0,
                             child: Icon(
-                              Icons.attach_file,
+                              // Icons.attach_file,
+                              Icons.image,
                               size: 30,
                               color: iconColor,
                             ),
@@ -248,12 +288,14 @@ class _ChatsScreenState extends State<ChatsScreen>
                               maxLines: 50,
                               minLines: 1,
                               onChanged: (val) {
-                                setState(() {
-                                  if (val == "")
+                                if (val.length == 0)
+                                  setState(() {
                                     isTextFieldExpanded = false;
-                                  else
+                                  });
+                                else if (val.length == 1)
+                                  setState(() {
                                     isTextFieldExpanded = true;
-                                });
+                                  });
                               },
                               style: TextStyle(
                                   fontSize: 16, color: Colors.white54),
@@ -282,12 +324,11 @@ class _ChatsScreenState extends State<ChatsScreen>
                       ? null
                       : () {
                           DBService.instance.sendMessage(
-                             message: textEditingController.text,
-                              conversationID:widget.conversationID,
+                              message: textEditingController.text,
+                              conversationID: widget.conversationID,
                               recipientID: widget.otherUserID,
                               type: "text",
-                              senderID: userUID
-                          );
+                              senderID: userUID);
                           setState(() {
                             textEditingController.text = "";
                           });
@@ -309,9 +350,7 @@ class _ChatsScreenState extends State<ChatsScreen>
   @override
   bool get wantKeepAlive => true;
 
-  void showUploadingMedia() {
-
-  }
+  void showUploadingMedia() {}
 }
 
 class ChatsList extends StatefulWidget {
