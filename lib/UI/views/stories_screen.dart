@@ -172,21 +172,22 @@ class _StoryScreenState extends State<StoryScreen> {
                     ),
                   ),
 
-                  Container(
-                    // height: screenSize.height,
-                    // width: screenSize.width,
-                    decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                            colors: [
-                              Colors.black.withOpacity(0.9),
-                              Colors.transparent,
-                              Colors.transparent,
-                              Colors.black.withOpacity(0.6)
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            stops: [0, 0.14, 0.9, 1])),
-                  ),
+                  // Container(
+                  //   // height: screenSize.height,
+                  //   // width: screenSize.width,
+                  //   decoration: BoxDecoration(
+                  //       gradient: LinearGradient(
+                  //
+                  //           List: [
+                  //             Colors.black.withOpacity(0.9),
+                  //             Colors.transparent,
+                  //             Colors.transparent,
+                  //             Colors.black.withOpacity(0.6)
+                  //           ],
+                  //           begin: Alignment.topCenter,
+                  //           end: Alignment.bottomCenter,
+                  //           stops: [0, 0.14, 0.9, 1])),
+                  // ),
 
                   ///Todo Complete the Story Heading
                   Positioned(
